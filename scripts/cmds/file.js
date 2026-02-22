@@ -1,40 +1,35 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
 
 module.exports = {
-  config: {
-    name: "filecmd",
-    aliases: ["file"],
-    version: "1.0",
-    author: "nexo_here",
-    countDown: 5,
-    role: 2,
-    shortDescription: "View code of a command",
-    longDescription: "View the raw source code of any command in the commands folder",
-    category: "owner",
-    guide: "{pn} <commandName>"
-  },
+ config: {
+ name: "givefile",
+ aliases: ["file"],
+ version: "1.0",
+ author: "♡ 𝐍𝐚𝐳𝐫𝐮𝐥 ♡",
+ countDown: 5,
+ role: 0,
+ description: "extract file",
+ category: "owner",
+ guide: "{pn} Write a file name"
+ },
 
-  onStart: async function ({ args, message }) {
-    const cmdName = args[0];
-    if (!cmdName) return message.reply("❌ | Please provide the command name.\nExample: filecmd fluxsnell");
+ onStart: async function ({ message, args, api, event }) {
+ const permission = ["61558762813083"];
+ if (!permission.includes(event.senderID)) {
+ return api.sendMessage("⩸__ 😠𝙰𝚛𝚎 𝚢𝚘𝚞 𝚌𝚛𝚊𝚣𝚢 𝙾𝚗𝚕𝚢 Ayanokoji 𝙱𝚘𝚜𝚜𝚎 𝚙𝚎𝚛𝚖𝚒𝚜𝚜𝚒𝚘𝚗 𝚝𝚘 𝚞𝚜𝚎 𝚝𝚑𝚒𝚜 𝚌𝚘𝚖𝚖𝚊𝚗𝚍𝚜 𝙵𝚒𝚕𝚎. ❌", event.threadID, event.messageID);
+ }
 
-    const cmdPath = path.join(__dirname, `${cmdName}.js`);
-    if (!fs.existsSync(cmdPath)) return message.reply(`❌ | Command "${cmdName}" not found in this folder.`);
+ const fileName = args[0];
+ if (!fileName) {
+ return api.sendMessage("🔰 provide a file name!", event.threadID, event.messageID);
+ }
 
-    try {
-      const code = fs.readFileSync(cmdPath, "utf8");
+ const filePath = __dirname + `/${fileName}.js`;
+ if (!fs.existsSync(filePath)) {
+ return api.sendMessage(`File not found: ${fileName}.js`, event.threadID, event.messageID);
+ }
 
-      if (code.length > 19000) {
-        return message.reply("⚠️ | This file is too large to display.");
-      }
-
-      return message.reply({
-        body: `📄 | Source code of "${cmdName}.js":\n\n${code}`
-      });
-    } catch (err) {
-      console.error(err);
-      return message.reply("❌ | Error reading the file.");
-    }
-  }
+ const fileContent = fs.readFileSync(filePath, 'utf8');
+ api.sendMessage({ body: fileContent }, event.threadID);
+ }
 };
